@@ -44,7 +44,7 @@ defmodule Waffle.Storage.Google.CloudStorage do
       |> get_gcs_optional_params(version, meta)
       |> ensure_keyword_list()
 
-    insert(conn(scope), bucket(definition), path, data(meta), gcs_options, gcs_optional_params)
+    insert(conn(scope), bucket(definition, meta), path, data(meta), gcs_options, gcs_optional_params)
   end
 
   @doc """
@@ -87,8 +87,8 @@ defmodule Waffle.Storage.Google.CloudStorage do
   @doc """
   Returns the bucket for file uploads.
   """
-  @spec bucket(Types.definition) :: String.t
-  def bucket(definition), do: Util.var(definition.bucket())
+  @spec bucket(Types.definition, Types.meta) :: String.t
+  def bucket(definition, meta \\ {}), do: Util.var(definition.bucket(meta))
 
   @doc """
   Returns the storage directory **within a bucket** to store the file under.
