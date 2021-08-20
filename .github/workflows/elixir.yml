@@ -13,47 +13,29 @@ env:
 jobs:
   build:
 
-    name: Build and test (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
+    name: Build and test
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        include:
-          - elixir: 1.9.4
-            otp: 21.3.8.24
-
-          - elixir: 1.10.4
-            otp: 21.3.8.24
-
-          - elixir: 1.11.4
-            otp: 21.3.8.24
-
-          - elixir: 1.11.4
-            otp: 23.3.4.4
-
-          - elixir: 1.12.4
-            otp: 24.0.3
 
     steps:
     - uses: actions/checkout@v2
 
     - name: Set up Elixir
-      uses: erlef/setup-elixir@885971a72ed1f9240973bd92ab57af8c1aa68f24
+      uses: erlef/setup-elixir@v1.9.0
       with:
-        elixir-version: ${{ matrix.elixir }}
-        otp-version: ${{ matrix.otp }}
+        elixir-version: 1.12.4
+        otp-version: 24.0.3
 
     - name: Restore dependencies cache
       uses: actions/cache@v2
       id: mix-cache
       with:
         path: deps
-        key: ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-mix-${{ hashFiles('**/mix.lock') }}
-        restore-keys: ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-mix-
+        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+        restore-keys: ${{ runner.os }}-mix-
 
     - name: Install dependencies
       run: mix deps.get --only test
-      
+
     - name: Compile & lint dependencies
       run: mix compile --warnings-as-errors
       env:
