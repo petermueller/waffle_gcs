@@ -22,7 +22,7 @@ jobs:
     - name: Set up Elixir
       uses: erlef/setup-elixir@v1.9.0
       with:
-        elixir-version: 1.12.4
+        elixir-version: 1.12.2
         otp-version: 24.0.3
 
     - name: Restore dependencies cache
