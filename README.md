@@ -75,13 +75,24 @@ over token generation, you can define your own module:
 ```elixir
 defmodule MyCredentials do
   @behaviour Waffle.Storage.Google.Token.Fetcher
+
+  alias MyApp.Admin
+  alias MyApp.User
+
   @impl Waffle.Storage.Google.Token.Fetcher
-  def get_token(scopes) when is_list(scopes), do: get_token(Enum.join(scopes, " "))
-  @impl Waffle.Storage.Google.Token.Fetcher
-  def get_token(scope) when is_binary(scope) do
-    {:ok, token} = Goth.Token.for_scope({"my-user@my-gcs-account.com", scope})
+  def get_token(scope, {_file, %schema{}}) do
+    {:ok, token} =
+      Goth.Token.for_scope({
+        get_account(schema),
+        scope
+      })
+
     token.token
   end
+
+  @spec get_account(module()) :: String.t()
+  defp get_account(Admin), do: "my-admin@my-gcs-account.com"
+  defp get_account(User), do: "my-user@my-gcs-account.com"
 end
 ```
 

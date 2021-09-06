@@ -44,7 +44,9 @@ defmodule Waffle.Storage.Google.CloudStorage do
       |> get_gcs_optional_params(version, meta)
       |> ensure_keyword_list()
 
-    insert(conn(), bucket(definition), path, data(meta), gcs_options, gcs_optional_params)
+    meta
+    |> conn()
+    |> insert(bucket(definition), path, data(meta), gcs_options, gcs_optional_params)
   end
 
   @doc """
@@ -52,8 +54,9 @@ defmodule Waffle.Storage.Google.CloudStorage do
   """
   @spec delete(Types.definition(), Types.version(), Types.meta()) :: object_or_error
   def delete(definition, version, meta) do
-    Objects.storage_objects_delete(
-      conn(),
+    meta
+    |> conn()
+    |> Objects.storage_objects_delete(
       bucket(definition),
       path_for(definition, version, meta)
     )
@@ -76,12 +79,13 @@ defmodule Waffle.Storage.Google.CloudStorage do
   Constructs a new connection object with scoped authentication. If no scope is
   provided, the `devstorage.full_control` scope is used as a default.
   """
-  @spec conn(String.t()) :: Tesla.Env.client()
-  def conn(scope \\ @full_control_scope) do
+  @spec conn(Types.meta()) :: Tesla.Env.client()
+  def conn(meta) do
     token_store =
       Application.get_env(:waffle, :token_fetcher, Waffle.Storage.Google.Token.DefaultFetcher)
 
-    token_store.get_token(scope)
+    @full_control_scope
+    |> token_store.get_token(meta)
     |> Connection.new()
   end
 
