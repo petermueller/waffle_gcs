@@ -44,8 +44,8 @@ defmodule Waffle.Storage.Google.CloudStorage do
       |> get_gcs_optional_params(version, meta)
       |> ensure_keyword_list()
 
-    meta
-    |> conn()
+    @full_control_scope
+    |> conn(meta)
     |> insert(bucket(definition), path, data(meta), gcs_options, gcs_optional_params)
   end
 
@@ -54,8 +54,8 @@ defmodule Waffle.Storage.Google.CloudStorage do
   """
   @spec delete(Types.definition(), Types.version(), Types.meta()) :: object_or_error
   def delete(definition, version, meta) do
-    meta
-    |> conn()
+    @full_control_scope
+    |> conn(meta)
     |> Objects.storage_objects_delete(
       bucket(definition),
       path_for(definition, version, meta)
