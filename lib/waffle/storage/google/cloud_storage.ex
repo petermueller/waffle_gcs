@@ -79,12 +79,12 @@ defmodule Waffle.Storage.Google.CloudStorage do
   Constructs a new connection object with scoped authentication. If no scope is
   provided, the `devstorage.full_control` scope is used as a default.
   """
-  @spec conn(Types.meta()) :: Tesla.Env.client()
-  def conn(meta) do
+  @spec conn(String.t(), Types.meta() | nil) :: Tesla.Env.client()
+  def conn(scope \\ @full_control_scope, meta \\ nil) do
     token_store =
       Application.get_env(:waffle, :token_fetcher, Waffle.Storage.Google.Token.DefaultFetcher)
 
-    @full_control_scope
+    scope
     |> token_store.get_token(meta)
     |> Connection.new()
   end
