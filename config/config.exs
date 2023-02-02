@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :waffle,
   bucket: {:system, "WAFFLE_BUCKET"},
