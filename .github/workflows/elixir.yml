@@ -19,21 +19,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - elixir: 1.9.4
-            otp: 21.3.8.24
-
-          - elixir: 1.10.4
-            otp: 21.3.8.24
-
-          - elixir: 1.11.4
-            otp: 21.3.8.24
-
-          - elixir: 1.11.4
-            otp: 23.3.4.4
-
-          - elixir: 1.12.2
-            otp: 24.0.3
-
           - elixir: 1.14.3
             otp: 25.2.2
 
@@ -45,7 +30,6 @@ jobs:
       with:
         elixir-version: ${{ matrix.elixir }}
         otp-version: ${{ matrix.otp }}
-        version-type: strict
 
     - name: Restore dependencies cache
       uses: actions/cache@v2
