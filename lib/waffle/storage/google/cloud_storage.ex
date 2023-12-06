@@ -16,6 +16,8 @@ defmodule Waffle.Storage.Google.CloudStorage do
 
   @full_control_scope "https://www.googleapis.com/auth/devstorage.full_control"
 
+  @token_fetcher Application.compile_env!(:waffle, :token_fetcher)
+
   alias GoogleApi.Storage.V1.Connection
   alias GoogleApi.Storage.V1.Api.Objects
   alias GoogleApi.Storage.V1.Model.Object
@@ -78,10 +80,8 @@ defmodule Waffle.Storage.Google.CloudStorage do
   """
   @spec conn(String.t()) :: Tesla.Env.client()
   def conn(scope \\ @full_control_scope) do
-    token_store =
-      Application.get_env(:waffle, :token_fetcher, Waffle.Storage.Google.Token.DefaultFetcher)
-
-    token_store.get_token(scope)
+    scope
+    |> @token_fetcher.get_token()
     |> Connection.new()
   end
 

@@ -4,3 +4,13 @@ ExUnit.start()
 unless Version.compare(System.version(), "1.8.0") == :lt do
   ExUnit.after_suite(&Cleanup.execute/1)
 end
+
+credentials =
+  "GCP_CREDENTIALS"
+  |> System.fetch_env!()
+  |> Base.decode64!()
+  |> Jason.decode!()
+
+source = {:service_account, credentials}
+
+Goth.start_link(name: Waffle.Goth, source: source)

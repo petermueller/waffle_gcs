@@ -66,21 +66,18 @@ module (e.g. `def bucket(), do: "my-bucket"`).
 
 Authentication is done through Goth which requires credentials (https://github.com/peburrows/goth#installation).
 
-### Custom Token Generation ###
+### Goth >= 1.3 ###
 
-By default, the credentials provided to Goth will be used to generate tokens.
 If you have multiple sets of credentials in Goth or otherwise need more control
 over token generation, you can define your own module:
 
 ```elixir
-defmodule MyCredentials do
+defmodule MyApp.WaffleTokenFetcher do
   @behaviour Waffle.Storage.Google.Token.Fetcher
-  @impl Waffle.Storage.Google.Token.Fetcher
-  def get_token(scopes) when is_list(scopes), do: get_token(Enum.join(scopes, " "))
-  @impl Waffle.Storage.Google.Token.Fetcher
-  def get_token(scope) when is_binary(scope) do
-    {:ok, token} = Goth.Token.for_scope({"my-user@my-gcs-account.com", scope})
-    token.token
+
+  @impl true
+  def get_token(_scope) when is_binary(_scope) do
+    Goth.fetch!(MyApp.Goth).token
   end
 end
 ```
@@ -91,7 +88,19 @@ And configure it to use this new module instead of the default token generation:
 config :waffle,
   storage: Waffle.Storage.Google.CloudStorage,
   bucket: "gcs-bucket-name",
-  token_fetcher: MyCredentials
+  token_fetcher: MyApp.WaffleTokenFetcher
+```
+
+### Goth < 1.3 ###
+
+You can use the Goth 1.1 token fetcher that reads the default credentials from
+Goth.
+
+```elixir
+config :waffle,
+  storage: Waffle.Storage.Google.CloudStorage,
+  bucket: "gcs-bucket-name",
+  token_fetcher: Waffle.Storage.Googke.Token.Fetcher.GothTokenFetcher
 ```
 
 ## URL Signing
