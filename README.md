@@ -43,6 +43,7 @@ Add it to your mix dependencies:
 ```elixir
 defp deps do
   [
+    {:goth, "~> 1.3"},
     {:waffle_gcs, "~> 0.2"}
   ]
 end
@@ -56,7 +57,8 @@ All configuration values are stored under the `:waffle` app key. E.g.
 config :waffle,
   storage: Waffle.Storage.Google.CloudStorage,
   bucket: "gcs-bucket",
-  storage_dir: "uploads/waffle"
+  storage_dir: "uploads/waffle",
+  token_fetcher: MyApp.WaffleTokenFetcher
 ```
 
 **Note**: a valid bucket name is a required config. This can either be a
@@ -68,8 +70,7 @@ Authentication is done through Goth which requires credentials (https://github.c
 
 ### Goth >= 1.3 ###
 
-If you have multiple sets of credentials in Goth or otherwise need more control
-over token generation, you can define your own module:
+For newer versions of Goth, you **must** provide the token fetcher module, for example:
 
 ```elixir
 defmodule MyApp.WaffleTokenFetcher do
@@ -82,7 +83,7 @@ defmodule MyApp.WaffleTokenFetcher do
 end
 ```
 
-And configure it to use this new module instead of the default token generation:
+And configure it to use your module:
 
 ```elixir
 config :waffle,
